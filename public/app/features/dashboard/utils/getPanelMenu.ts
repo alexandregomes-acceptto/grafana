@@ -104,12 +104,14 @@ export const getPanelMenu = (dashboard: DashboardModel, panel: PanelModel) => {
     });
   }
 
-  menu.push({
-    text: 'Share',
-    iconClassName: 'fa fa-fw fa-share',
-    onClick: onSharePanel,
-    shortcut: 'p s',
-  });
+  if (contextSrv.isEditor) {
+    menu.push({
+      text: 'Share',
+      iconClassName: 'fa fa-fw fa-share',
+      onClick: onSharePanel,
+      shortcut: 'p s',
+    });
+  }
 
   if (contextSrv.hasAccessToExplore() && panel.datasource) {
     menu.push({
@@ -143,10 +145,12 @@ export const getPanelMenu = (dashboard: DashboardModel, panel: PanelModel) => {
     });
   }
 
-  subMenu.push({
-    text: 'Panel JSON',
-    onClick: onEditPanelJson,
-  });
+  if (contextSrv.isEditor) {
+    subMenu.push({
+      text: 'Panel JSON',
+      onClick: onEditPanelJson,
+    });
+  }
 
   menu.push({
     type: 'submenu',

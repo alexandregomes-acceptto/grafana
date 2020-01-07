@@ -18,7 +18,7 @@ import { TemplateSrv } from '../templating/template_srv';
 import { getPanelLinksSupplier } from './panellinks/linkSuppliers';
 import { AppEvent, PanelEvents, PanelPluginMeta, renderMarkdown } from '@grafana/data';
 import { getLocationSrv } from '@grafana/runtime';
-
+import { contextSrv } from '../../core/services/context_srv';
 export class PanelCtrl {
   panel: any;
   error: any;
@@ -136,12 +136,14 @@ export class PanelCtrl {
       });
     }
 
-    menu.push({
-      text: 'Share',
-      click: 'ctrl.sharePanel();',
-      icon: 'fa fa-fw fa-share',
-      shortcut: 'p s',
-    });
+    if (contextSrv.isEditor) {
+      menu.push({
+        text: 'Share',
+        click: 'ctrl.sharePanel();',
+        icon: 'fa fa-fw fa-share',
+        shortcut: 'p s',
+      });
+    }
 
     if (config.featureToggles.inspect) {
       menu.push({
@@ -194,10 +196,12 @@ export class PanelCtrl {
       });
     }
 
-    menu.push({
-      text: 'Panel JSON',
-      click: 'ctrl.editPanelJson(); dismiss();',
-    });
+    if (contextSrv.isEditor) {
+      menu.push({
+        text: 'Panel JSON',
+        click: 'ctrl.editPanelJson(); dismiss();',
+      });
+    }
 
     this.events.emit(PanelEvents.initPanelActions, menu);
     return menu;
