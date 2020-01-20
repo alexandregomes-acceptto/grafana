@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 // Utils & Services
 import { appEvents } from 'app/core/app_events';
 import { PlaylistSrv } from 'app/features/playlist/playlist_srv';
+import { contextSrv } from '../../../../core/services/context_srv';
 
 // Components
 import { DashNavButton } from './DashNavButton';
@@ -124,24 +125,36 @@ export class DashNav extends PureComponent<Props> {
     const folderTitle = dashboard.meta.folderTitle;
     const haveFolder = dashboard.meta.folderId > 0;
 
+    let headerContent;
+
+    if (contextSrv.isEditor) {
+      headerContent = (
+        <div className="navbar-page-btn">
+          {!this.isInFullscreenOrSettings && <i className="gicon gicon-dashboard" />}
+          {haveFolder && (
+            <>
+              <a className="navbar-page-btn__folder" onClick={this.onFolderNameClick}>
+                {folderTitle}
+              </a>
+              <i className="fa fa-chevron-right navbar-page-btn__folder-icon" />
+            </>
+          )}
+          <a onClick={this.onDahboardNameClick}>
+            {dashboard.title} <i className="fa fa-caret-down navbar-page-btn__search" />
+          </a>
+        </div>
+      );
+    } else {
+      headerContent = (
+        <div className="navbar-page-btn">
+          <span>{dashboard.title}</span>
+        </div>
+      );
+    }
+
     return (
       <>
-        <div>
-          <div className="navbar-page-btn">
-            {!this.isInFullscreenOrSettings && <i className="gicon gicon-dashboard" />}
-            {haveFolder && (
-              <>
-                <a className="navbar-page-btn__folder" onClick={this.onFolderNameClick}>
-                  {folderTitle}
-                </a>
-                <i className="fa fa-chevron-right navbar-page-btn__folder-icon" />
-              </>
-            )}
-            <a onClick={this.onDahboardNameClick}>
-              {dashboard.title} <i className="fa fa-caret-down navbar-page-btn__search" />
-            </a>
-          </div>
-        </div>
+        <div>{headerContent}</div>
         {this.isSettings && <span className="navbar-settings-title">&nbsp;/ Settings</span>}
         <div className="navbar__spacer" />
       </>
@@ -252,14 +265,16 @@ export class DashNav extends PureComponent<Props> {
           )}
         </div>
 
-        <div className="navbar-buttons navbar-buttons--tv">
-          <DashNavButton
-            tooltip="Cycle view mode"
-            classSuffix="tv"
-            icon="fa fa-desktop"
-            onClick={this.onToggleTVMode}
-          />
-        </div>
+        {contextSrv.isEditor && (
+          <div className="navbar-buttons navbar-buttons--tv">
+            <DashNavButton
+              tooltip="Cycle view mode"
+              classSuffix="tv"
+              icon="fa fa-desktop"
+              onClick={this.onToggleTVMode}
+            />
+          </div>
+        )}
 
         {!dashboard.timepicker.hidden && (
           <div className="navbar-buttons">
