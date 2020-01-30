@@ -71,6 +71,14 @@ export class DashNav extends PureComponent<Props> {
     appEvents.emit(CoreEvents.toggleKioskMode);
   };
 
+  onToggleTheme = () => {
+    appEvents.emit(CoreEvents.toggleKioskMode);
+  };
+
+  onSignOut = () => {
+    window.location.href = '/logout';
+  };
+
   onSave = () => {
     const { $injector } = this.props;
     const dashboardSrv = $injector.get('dashboardSrv');
@@ -265,7 +273,7 @@ export class DashNav extends PureComponent<Props> {
           )}
         </div>
 
-        {contextSrv.isEditor && (
+        {(contextSrv.isEditor || contextSrv.isGrafanaAdmin) && (
           <div className="navbar-buttons navbar-buttons--tv">
             <DashNavButton
               tooltip="Cycle view mode"
@@ -275,6 +283,15 @@ export class DashNav extends PureComponent<Props> {
             />
           </div>
         )}
+
+        {/* <div className="navbar-buttons">
+          <DashNavButton
+            tooltip="Cycle theme"
+            classSuffix="theme"
+            icon="fa fa-paint-brush"
+            onClick={this.onToggleTheme}
+          />
+        </div> */}
 
         {!dashboard.timepicker.hidden && (
           <div className="navbar-buttons">
@@ -286,6 +303,10 @@ export class DashNav extends PureComponent<Props> {
             />
           </div>
         )}
+
+        <div className="navbar-buttons">
+          <DashNavButton tooltip="Sign out" classSuffix="signout" icon="fa fa-sign-out" onClick={this.onSignOut} />
+        </div>
       </div>
     );
   }
