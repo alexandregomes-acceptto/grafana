@@ -84,7 +84,7 @@ export function getPanelMenu(
 
   const menu: PanelMenuItem[] = [];
 
-  if (!panel.isEditing) {
+  if (contextSrv.isEditor && !panel.isEditing) {
     menu.push({
       text: 'View',
       iconClassName: 'eye',
@@ -102,12 +102,14 @@ export function getPanelMenu(
     });
   }
 
-  menu.push({
-    text: 'Share',
-    iconClassName: 'share-alt',
-    onClick: onSharePanel,
-    shortcut: 'p s',
-  });
+  if (contextSrv.isEditor) {
+    menu.push({
+      text: 'Share',
+      iconClassName: 'share-alt',
+      onClick: onSharePanel,
+      shortcut: 'p s',
+    });
+  }
 
   if (contextSrv.hasAccessToExplore() && !(panel.plugin && panel.plugin.meta.skipDataQuery)) {
     menu.push({
@@ -135,19 +137,23 @@ export function getPanelMenu(
     }
   }
 
-  inspectMenu.push({
-    text: 'Panel JSON',
-    onClick: (e: React.MouseEvent<any>) => onInspectPanel('json'),
-  });
+  if (contextSrv.isEditor) {
+    inspectMenu.push({
+      text: 'Panel JSON',
+      onClick: (e: React.MouseEvent<any>) => onInspectPanel('json'),
+    });
+  }
 
-  menu.push({
-    type: 'submenu',
-    text: 'Inspect',
-    iconClassName: 'info-circle',
-    onClick: (e: React.MouseEvent<any>) => onInspectPanel(),
-    shortcut: 'i',
-    subMenu: inspectMenu,
-  });
+  if (contextSrv.isEditor) {
+    menu.push({
+      type: 'submenu',
+      text: 'Inspect',
+      iconClassName: 'info-circle',
+      onClick: (e: React.MouseEvent<any>) => onInspectPanel(),
+      shortcut: 'i',
+      subMenu: inspectMenu,
+    });
+  }
 
   const subMenu: PanelMenuItem[] = [];
 

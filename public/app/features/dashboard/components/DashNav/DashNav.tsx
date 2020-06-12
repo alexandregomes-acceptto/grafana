@@ -18,6 +18,7 @@ import { DashboardModel } from '../../state';
 import { CoreEvents, StoreState } from 'app/types';
 import { ShareModal } from 'app/features/dashboard/components/ShareModal';
 import { SaveDashboardModalProxy } from 'app/features/dashboard/components/SaveDashboard/SaveDashboardModalProxy';
+import { contextSrv } from 'app/core/core';
 
 export interface OwnProps {
   dashboard: DashboardModel;
@@ -181,21 +182,33 @@ class DashNav extends PureComponent<Props> {
     const folderTitle = dashboard.meta.folderTitle;
     const haveFolder = dashboard.meta.folderId > 0;
 
+    let headerContent;
+
+    if (contextSrv.isEditor) {
+      headerContent = (
+        <div className="navbar-page-btn">
+          {!isFullscreen && <Icon name="apps" size="lg" className={mainIconClassName} />}
+          {haveFolder && (
+            <>
+              <a className="navbar-page-btn__folder" onClick={this.onFolderNameClick}>
+                {folderTitle} <span className={folderSymbol}>/</span>
+              </a>
+            </>
+          )}
+          <a onClick={this.onDashboardNameClick}>{dashboard.title}</a>
+        </div>
+      );
+    } else {
+      headerContent = (
+        <div className="navbar-page-btn">
+          <span>{dashboard.title}</span>
+        </div>
+      );
+    }
+
     return (
       <>
-        <div>
-          <div className="navbar-page-btn">
-            {!isFullscreen && <Icon name="apps" size="lg" className={mainIconClassName} />}
-            {haveFolder && (
-              <>
-                <a className="navbar-page-btn__folder" onClick={this.onFolderNameClick}>
-                  {folderTitle} <span className={folderSymbol}>/</span>
-                </a>
-              </>
-            )}
-            <a onClick={this.onDashboardNameClick}>{dashboard.title}</a>
-          </div>
-        </div>
+        <div>{headerContent}</div>
         <div className="navbar-buttons navbar-buttons--actions">{this.renderLeftActionsButton()}</div>
         <div className="navbar__spacer" />
       </>
@@ -310,7 +323,9 @@ class DashNav extends PureComponent<Props> {
         <div className="navbar-buttons navbar-buttons--actions">{this.renderRightActionsButton()}</div>
 
         <div className="navbar-buttons navbar-buttons--tv">
-          <DashNavButton tooltip="Cycle view mode" classSuffix="tv" icon="monitor" onClick={this.onToggleTVMode} />
+          {(contextSrv.isEditor || contextSrv.isGrafanaAdmin) && (
+            <DashNavButton tooltip="Cycle view mode" classSuffix="tv" icon="monitor" onClick={this.onToggleTVMode} />
+          )}
         </div>
 
         {!dashboard.timepicker.hidden && (
