@@ -83,6 +83,10 @@ export class KeybindingSrv {
   }
 
   openSearch() {
+    if (!this.contextSrv.isEditor) {
+      return;
+    }
+
     const search = _.extend(this.$location.search(), { search: 'open' });
     this.$location.search(search);
   }
@@ -93,18 +97,34 @@ export class KeybindingSrv {
   }
 
   openAlerting() {
+    if (!this.contextSrv.isEditor) {
+      return;
+    }
+
     this.$location.url('/alerting');
   }
 
   goToHome() {
+    if (!this.contextSrv.isEditor) {
+      return;
+    }
+
     this.$location.url('/');
   }
 
   goToProfile() {
+    if (!this.contextSrv.isEditor) {
+      return;
+    }
+
     this.$location.url('/profile');
   }
 
   showHelpModal() {
+    if (!this.contextSrv.isEditor) {
+      return;
+    }
+
     appEvents.emit(CoreEvents.showModal, { templateHtml: '<help-modal></help-modal>' });
   }
 
@@ -190,18 +210,30 @@ export class KeybindingSrv {
   }
 
   showDashEditView() {
+    if (!this.contextSrv.isEditor) {
+      return;
+    }
+
     const search = _.extend(this.$location.search(), { editview: 'settings' });
     this.$location.search(search);
   }
 
   setupDashboardBindings(scope: IRootScopeService & AppEventEmitter, dashboard: DashboardModel) {
     this.bind('mod+o', () => {
+      if (!this.contextSrv.isEditor) {
+        return;
+      }
+
       dashboard.graphTooltip = (dashboard.graphTooltip + 1) % 3;
       appEvents.emit(CoreEvents.graphHoverClear);
       dashboard.startRefresh();
     });
 
     this.bind('mod+s', () => {
+      if (!this.contextSrv.isEditor) {
+        return;
+      }
+
       appEvents.emit(CoreEvents.showModalReact, {
         component: SaveDashboardModalProxy,
         props: {
@@ -228,7 +260,7 @@ export class KeybindingSrv {
 
     // edit panel
     this.bind('e', () => {
-      if (!dashboard.meta.focusPanelId) {
+      if (!dashboard.meta.focusPanelId || !this.contextSrv.isEditor) {
         return;
       }
 
@@ -247,6 +279,10 @@ export class KeybindingSrv {
     });
 
     this.bind('i', () => {
+      if (!this.contextSrv.isEditor) {
+        return;
+      }
+
       if (dashboard.meta.focusPanelId) {
         const search = _.extend(this.$location.search(), { inspect: dashboard.meta.focusPanelId });
         this.$location.search(search);
@@ -299,6 +335,10 @@ export class KeybindingSrv {
 
     // share panel
     this.bind('p s', () => {
+      if (!this.contextSrv.isEditor) {
+        return;
+      }
+
       if (dashboard.meta.focusPanelId) {
         const panelInfo = dashboard.getPanelInfoById(dashboard.meta.focusPanelId);
 
@@ -340,6 +380,10 @@ export class KeybindingSrv {
     });
 
     this.bind('d n', () => {
+      if (!this.contextSrv.isEditor) {
+        return;
+      }
+
       this.$location.url('/dashboard/new');
     });
 
@@ -348,19 +392,35 @@ export class KeybindingSrv {
     });
 
     this.bind('d s', () => {
+      if (!this.contextSrv.isEditor) {
+        return;
+      }
+
       this.showDashEditView();
     });
 
     this.bind('d k', () => {
+      if (!this.contextSrv.isEditor) {
+        return;
+      }
+
       appEvents.emit(CoreEvents.toggleKioskMode);
     });
 
     this.bind('d v', () => {
+      if (!this.contextSrv.isEditor) {
+        return;
+      }
+
       appEvents.emit(CoreEvents.toggleViewMode);
     });
 
     //Autofit panels
     this.bind('d a', () => {
+      if (!this.contextSrv.isEditor) {
+        return;
+      }
+
       // this has to be a full page reload
       const queryParams = store.getState().location.query;
       const newUrlParam = queryParams.autofitpanels ? '' : '&autofitpanels';
